@@ -29,21 +29,28 @@ let students = [];
 
 io.on("connection", (socket) => {
 
-    console.log("🟢 Nuevo usuario conectado:", socket.id);
+    console.log("🟢 Conexión:", socket.id);
 
-    students.push(socket.id);
+socket.on("student-join", (data) => {
+
+    console.log(data);
+
+    students.push({
+        id: socket.id,
+        name: data.name
+    });
 
     io.emit("students-update", students);
-
+});
     socket.on("disconnect", () => {
 
-        console.log("🔴 Usuario desconectado:", socket.id);
-
         students = students.filter(
-            id => id !== socket.id
+            student => student.id !== socket.id
         );
 
         io.emit("students-update", students);
+
+        console.log("🔴 Desconectado");
     });
 });
 
